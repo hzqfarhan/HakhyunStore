@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HakhyunStore</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-red-500 to-red-700 min-h-screen flex flex-col items-center p-4">
+  <header class="text-center mb-6">
+    <h1 class="text-3xl font-bold text-white">HakhyunStore</h1>
+    <p class="text-white opacity-80">Your Canva Subscription Shop</p>
+  </header>
+
+  <main class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+    <form id="orderForm" class="space-y-4">
+      <div>
+        <label class="block font-medium mb-1">Choose Product</label>
+        <div class="space-y-2">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="product" value="Canva Monthly" required>
+            <span>Canva Monthly</span>
+          </label>
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="product" value="Canva Weekly" required>
+            <span>Canva Weekly</span>
+          </label>
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="product" value="Canva Lifetime" required>
+            <span>Canva Lifetime</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-medium mb-1">Name</label>
+        <input type="text" name="name" class="w-full border rounded p-2" required>
+      </div>
+
+      <div>
+        <label class="block font-medium mb-1">Email</label>
+        <input type="email" name="email" class="w-full border rounded p-2" required>
+      </div>
+
+      <div>
+        <label class="block font-medium mb-1">Proof of Payment</label>
+        <input type="file" name="proof" accept="image/*" class="w-full" required>
+      </div>
+
+      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg">Place Order</button>
+    </form>
+
+    <p id="successMessage" class="hidden mt-4 text-green-700 font-semibold">✅ Order placed successfully!</p>
+  </main>
+
+  <script>
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const form = e.target;
+      const product = form.product.value;
+      const name = form.name.value;
+      const email = form.email.value;
+      const file = form.proof.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(event) {
+        const proofBase64 = event.target.result;
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+
+        orders.push({
+          product,
+          name,
+          email,
+          proof: proofBase64,
+          status: 'New',
+          date: new Date().toLocaleString()
+        });
+
+        localStorage.setItem('orders', JSON.stringify(orders));
+
+        form.reset();
+        document.getElementById('successMessage').classList.remove('hidden');
+      };
+
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>
